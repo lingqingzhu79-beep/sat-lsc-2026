@@ -10,17 +10,36 @@
         .wrapper { max-width: 820px; margin: 20px auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: 6px solid #1976D2; }
         h1 { color: #1e3a8a; text-align: center; font-size: 22px; text-transform: uppercase; margin-top: 15px; }
         p.info { text-align: center; color: #64748b; margin-bottom: 30px; font-size: 14px; }
+        
         .box-biodata { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
         label { font-weight: 600; display: block; margin-top: 12px; font-size: 14px; color: #475569; }
+        input[type="text"], select { width: 100%; padding: 11px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; margin-top: 5px; font-size: 14px;}
+        
+        .box-kop-siswa { width: 100%; max-width: 780px; margin: 0 auto 15px auto; display: block; }
+        .kop-surat-siswa { width: 100%; height: auto; display: block; }
+
+        /* Style untuk Halaman Ujian */
         .card-soal { background: #ffffff; border: 1px solid #e2e8f0; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
         .teks-soal { font-size: 15px; font-weight: 600; margin-bottom: 15px; color: #0f172a; line-height: 1.5; }
+        
         .opsi-item { display: block; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 15px; margin: 10px 0; border-radius: 6px; cursor: pointer; font-size: 14px; }
         .opsi-item:hover { background: #f1f5f9; }
         .opsi-item input { margin-right: 12px; }
         .opsi-item.terpilih { background: #eff6ff; border-color: #bfdbfe; font-weight: 500; }
-        .btn-kirim { background-color: #1976D2; color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 20px; }
-        .box-kop-siswa { width: 100%; max-width: 780px; margin: 0 auto 15px auto; display: block; }
-        .kop-surat-siswa { width: 100%; height: auto; display: block; }
+        
+        /* Grid Indikator Soal */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 10px; margin-bottom: 25px; padding: 15px; background: #f1f5f9; border-radius: 8px; }
+        .kotak-soal { height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; background-color: #ef4444; border: 2px solid transparent; user-select: none; }
+        .kotak-soal.terjawab { background-color: #22c55e; }
+        .kotak-soal.aktif { border-color: #1e3a8a; transform: scale(1.05); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        /* Tombol Navigasi */
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn-nav { background-color: #475569; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-nav:hover { background-color: #334155; }
+        .btn-mulai, .btn-kirim { background-color: #1976D2; color: white; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 20px; }
+        
+        #halaman-ujian { display: none; }
     </style>
 
 
@@ -30,22 +49,45 @@
     </div>
 
     <h1>SAT LANDSCAP XI DPIB TAHUN PELAJARAN 2025-2026</h1>
-    <p class="info">Silakan isi identitas Anda dan pilih salah satu poin jawaban yang paling tepat.</p>
-    <div class="box-biodata">
-        <h3>Identitas Peserta Ujian</h3>
-        <label>Nama Lengkap Siswa:</label>
-        <input type="text" id="nama_siswa" style="width:100%; padding:11px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;" placeholder="Ketik nama lengkap..." required="">
-        <label>Kelas / Ruang:</label>
-        <select id="kelas_siswa" style="width: 100%; padding: 11px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; margin-top: 5px;" required="">
-            <option value="" disabled selected>-- Pilih Kelas Anda --</option><option value="XI DPIB A">XI DPIB A</option><option value="XI DPIB B">XI DPIB B</option>
-        </select>
+
+    <!-- HALAMAN UTAMA (DATA DIRI) -->
+    <div id="halaman-utama">
+        <p class="info">Silakan lengkapi identitas Anda sebelum memulai ujian.</p>
+        <div class="box-biodata">
+            <h3>Identitas Peserta Ujian</h3>
+            <label>Nama Lengkap Siswa:</label>
+            <input type="text" id="nama_siswa" placeholder="Ketik nama lengkap..." required="">
+            
+            <label>Kelas / Ruang:</label>
+            <select id="kelas_siswa" required="">
+                <option value="" disabled selected>-- Pilih Kelas Anda --</option><option value="XI DPIB A">XI DPIB A</option><option value="XI DPIB B">XI DPIB B</option>
+            </select>
+        </div>
+        <button class="btn-mulai" onclick="mulaiUjian()">Mulai Mengerjakan Ujian »</button>
     </div>
-    <form id="form-ujian-siswa"><div id="lembar-soal-place"></div><button type="button" class="btn-kirim" onclick="submitJawabanSiswa()">Kirim Lembar Jawaban</button></form>
+
+    <!-- HALAMAN UJIAN (SOAL PER HALAMAN) -->
+    <div id="halaman-ujian">
+        <div style="font-size:13px; font-weight:bold; color:#475569; margin-bottom:8px;">Peta Soal:</div>
+        <div class="grid-container" id="tempat-grid-soal"></div>
+        
+        <div id="lembar-soal-place"></div>
+        
+        <div class="nav-buttons">
+            <button class="btn-nav" id="btn-prev" onclick="navigasi(-1)">« Sebelumnya</button>
+            <button class="btn-nav" id="btn-next" onclick="navigasi(1)">Berikutnya »</button>
+        </div>
+        <button class="btn-kirim" id="btn-kirim" style="display: none;" onclick="submitJawabanSiswa()">Kirim Lembar Jawaban</button>
+    </div>
 </div>
+
 <script>
     const base64Data = "W3sicGVydGFueWFhbiI6IlBhZGEgbWFzYSBwcmEta29sb25pYWwsIG1hc3lhcmFrYXQgTnVzYW50YXJhIG1lbWFuZGFuZyBlbGVtZW4gYWxhbSBzZWNhcmEgc2FrcmFsLiBTdHJ1a3R1ciBsYW5za2FwIHZlcm5ha3VsYXIgeWFuZyBtZW5nYW5nZ2FwIGd1bnVuZyBzZWJhZ2FpIHRlbXBhdCBzdWNpIGJlcnNlbWF5YW1ueWEgcm9oIG5lbmVrIG1veWFuZyBkaXNlYnV0IGtvbnNlcC4uLiIsIm9wc2kiOlsiTWFuZGFsYSIsIlB1bmRlbiBiZXJ1bmRhayIsIlRyaSBIaXRhIEthcmFuYSIsIkhvcnR1cyBDb25jbHVzdXMiLCJHZW5pdXMgTG9jaSJdLCJrdW5jaSI6IlB1bmRlbiBiZXJ1bmRhayIsImt1bmNpX2h1cnVmIjoiQiJ9LHsicGVydGFueWFhbiI6IkxhbnNrYXAgYnVkYXlhIFN1YmFrIGRpIEJhbGkgbWVuZXJhcGthbiBmaWxvc29maSBUcmkgSGl0YSBLYXJhbmEgdW50dWsgbWVuZ2F0dXIgbWFuYWplbWVuIGFpciBkYW4gcnVhbmcuIFNpc3RlbSB0ZXJhc2VyaW5nIHBhZGEgU3ViYWsgZGlyYW5jYW5nIHNlY2FyYSB0ZWtuaXMgdW50dWsuLi4iLCJvcHNpIjpbIk1lbmNpcHRha2FuIGlsdXNpIG9wdGlrIHNpbWV0cmlzIiwiTWVtYWtzYSBhbGFtIHR1bmR1ayBwYWRhIGdlb21ldHJpIGtldGF0IiwiTWVuY2VnYWggZXJvc2kgZGFuIG1lbmdvcHRpbWFsa2FuIGRpc3RyaWJ1c2kgYWlyIHNlY2FyYSBncmF2aXRhc2kiLCJNZW5haGFuIHRpdXBhbiBhbmdpbiBkaW5naW4gZGFyaSBhcmFoIGh1bHUiLCJNZW1idWF0IGtvbGFtIHBlcnRhaGFuYW4gbWlsaXRlciBiYWdpIGtlcmFqYWFuIl0sImt1bmNpIjoiTWVuY2VnYWggZXJvc2kgZGFuIG1lbmdvcHRpbWFsa2FuIGRpc3RyaWJ1c2kgYWlyIHNlY2FyYSBncmF2aXRhc2kiLCJrdW5jaV9odXJ1ZiI6IkMifSx7InBlcnRhbnlhYW4iOiJUYW1hbiBTYXJpIGRpIFlvZ3lha2FydGEgbWVydXBha2FuIG1haGFrYXJ5YSBsYW5za2FwIGVyYSBLZXN1bHRhbmFuIElzbGFtIHlhbmcgbWVtaWxpa2kgbXVsdGktZnVuZ3NpLCB5YWl0dSBzZWJhZ2FpLi4uIiwib3BzaSI6WyJLZWJ1biBib3RhbmkgaWxtaWFoIGRhbiBha2xpbWF0aXNhc2kgdGFuYW1hbiBla29ub21pIiwiVGFtYW4gcHVibGlrIHBlcmtvdGFhbiBkYW4gbWl0aWdhc2kgYmFuamlyIiwiVGVtcGF0IHJla3JlYXNpIHN1bHRhbiwgYXJlYSBwZXJ0YWhhbmFuLCBkYW4gbWFrbmEgZmlsb3NvZmlzIHN1ZmlzdGlrIiwiVGFtYW4ga2VyaW5nIHVudHVrIG1lZGl0YXNpIHBhcmEgYmlrc3UiLCJMYW5za2FwIG1vbnVtZW50YWwgdW50dWsgbWVtYmFuZ3VuIGlkZW50aXRhcyBuYXNpb25hbCJdLCJrdW5jaSI6IlRlbXBhdCByZWtyZWFzaSBzdWx0YW4sIGFyZWEgcGVydGFoYW5hbiwgZGFuIG1ha25hIGZpbG9zb2ZpcyBzdWZpc3RpayIsImt1bmNpX2h1cnVmIjoiQyJ9LHsicGVydGFueWFhbiI6IktlYnVuIFJheWEgQm9nb3IgeWFuZyBkaWRpcmlrYW4gcGFkYSB0YWh1biAxODE3IG9sZWggUHJvZi4gQ2FzcGFyIEdlb3JnIENhcmwgUmVpbndhcmR0IGF3YWxueWEgbWVuZ2Fkb3BzaSBnYXlhIGxhbnNrYXAgbmVnYXJhIEVyb3BhIHRlcnRlbnR1LCB5YWl0dS4uLiIsIm9wc2kiOlsiR2F5YSBQcmFuY2lzIHlhbmcgZ2VvbWV0cmlzIGtha3UiLCJHYXlhIEl0YWxpYSB5YW5nIG1lbmd1dGFtYWthbiB0ZXJhc2VyaW5nIGJlcnVuZGFrIiwiR2F5YSBSb21hd2kgeWFuZyBtZW5nZ3VuYWthbiBha3VhZHVrIG1hc2lmIiwiR2F5YSBJbmdncmlzIHlhbmcgbmF0dXJhbCBkZW5nYW4gcGFkYW5nIHJ1bXB1dCBkYW4gZGFuYXUgYnVhdGFuIiwiR2F5YSBDaW5hIHlhbmcgbWVuZ2d1bmFrYW4gYmF0dSBUYWlodSJdLCJrdW5jaSI6IkdheWEgSW5nZ3JpcyB5YW5nIG5hdHVyYWwgZGVuZ2FuIHBhZGFuZyBydW1wdXQgZGFuIGRhbmF1IGJ1YXRhbiIsImt1bmNpX2h1cnVmIjoiRCJ9LHsicGVydGFueWFhbiI6IkFyc2l0ZWsgQmVsYW5kYSBUaG9tYXMgS2Fyc3RlbiBtZW1iYXdhIHBlcnViYWhhbiBiZXNhciBkYWxhbSBzZWphcmFoIHRhdGEga290YSBJbmRvbmVzaWEgZGVuZ2FuIG1lbXBlcmtlbmFsa2FuIGtvbnNlcCBHYXJkZW4gQ2l0eS4gQ29udG9oIGthd2FzYW4gZGkgSmFrYXJ0YSB5YW5nIGRpcmFuY2FuZyBkZW5nYW4ga29uc2VwIGluaSBhZGFsYWguLi4iLCJvcHNpIjpbIk1vbnVtZW4gTmFzaW9uYWwgKE1vbmFzKSIsIkthd2FzYW4gTWVudGVuZyIsIkdlbG9yYSBCdW5nIEthcm5vIiwiUGVsYWJ1aGFuIFN1bmRhIEtlbGFwYSIsIlRhbWFuIFNhcmkiXSwia3VuY2kiOiJLYXdhc2FuIE1lbnRlbmciLCJrdW5jaV9odXJ1ZiI6IkIifSx7InBlcnRhbnlhYW4iOiJQYWRhIGFraGlyIGFiYWQga2UtMjAsIGFyc2l0ZWsgbGFuc2thcCBNYWRlIFdpamF5YSBtZW1wb3B1bGVya2FuIHRyZW4gZGVzYWluIGxhbnNrYXAgSW5kb25lc2lhIGtlIGR1bmlhIGludGVybmFzaW9uYWwsIHlhbmcgZGlrZW5hbCBkZW5nYW4gZ2F5YS4uLiIsIm9wc2kiOlsiVGFtYW4gVHJvcGlzIE1vZGVybiAoQmFsaSBHYXJkZW4pIiwiSW5kaXNjaGUgRW1waXJlIiwiTGFuc2thcCBNb251bWVudGFsIE5hc2lvbmFsaXMiLCJaZW4gRHJ5IEdhcmRlbiIsIkphcmRpbiDDoCBsYSBGcmFuw6dhaXNlIl0sImt1bmNpIjoiVGFtYW4gVHJvcGlzIE1vZGVybiAoQmFsaSBHYXJkZW4pIiwia3VuY2lfaHVydWYiOiJBIn0seyJwZXJ0YW55YWFuIjoiQmVyYmVkYSBkZW5nYW4gcGVuZGVrYXRhbiBOdXNhbnRhcmEgeWFuZyBvcmdhbmlrLCBzZWphcmFoIGxhbnNrYXAgRXJvcGEgc2VjYXJhIHVtdW0gZGljaXJpa2FuIHNlYmFnYWkgc2VidWFoIFwicGVuZHVsdW1cIiB5YW5nIGJlcmF5dW4gYW50YXJhLi4uIiwib3BzaSI6WyJFc3RldGlrYSBvcmllbnRhbCBkYW4gc3Bpcml0dWFsaXNtZSBiYXJhdCIsIkRvbWluYXNpIG1hbnVzaWEgYXRhcyBhbGFtIChnZW9tZXRyaSkgZGFuIGFwcmVzaWFzaSByb21hbnRpcyB0ZXJoYWRhcCBhbGFtIGxpYXIiLCJQZW1idWF0YW4gaHV0YW4gc2FrcmFsIGRhbiBwZW5hbmFtYW4gdGFuYW1hbiBvYmF0IGRpIGRhbGFtIGJpYXJhIiwiUGVuZ2d1bmFhbiBiYXR1IGFsYW0ga2FzYXIgZGFuIHBlbWJ1YXRhbiBwYXR1bmcgdHJhZGlzaW9uYWwiLCJNaXRpZ2FzaSBiYW5qaXIgcGVya290YWFuIGRhbiBwZW1idWF0YW4gdGFtYW4gcG9sZGVyIl0sImt1bmNpIjoiRG9taW5hc2kgbWFudXNpYSBhdGFzIGFsYW0gKGdlb21ldHJpKSBkYW4gYXByZXNpYXNpIHJvbWFudGlzIHRlcmhhZGFwIGFsYW0gbGlhciIsImt1bmNpX2h1cnVmIjoiQiJ9LHsicGVydGFueWFhbiI6IkJhbmdzYSBSb21hd2kgS3VubyBkaWtlbmFsIHNlYmFnYWkgaW5zaW55dXIgc2lwaWwgeWFuZyB1bHVuZy4gSW5vdmFzaSBpbmZyYXN0cnVrdHVyIHV0YW1hIHlhbmcgbWVyZWthIGJhbmd1biB1bnR1ayBtZW5nYWxpcmthbiBhaXIga2UgdGFtYW4tdGFtYW4gdmlsYSAoVmlsbGEgUnVzdGljYSkgYWRhbGFoLi4uIiwib3BzaSI6WyJQb2xkZXIiLCJQYXJ0ZXIiLCJBa3VhZHVrIChBcXVlZHVjdCkiLCJIYS1oYSBXYWxsIiwiTW9vbiBHYXRlIl0sImt1bmNpIjoiQWt1YWR1ayAoQXF1ZWR1Y3QpIiwia3VuY2lfaHVydWYiOiJDIn0seyJwZXJ0YW55YWFuIjoiUGFkYSBBYmFkIFBlcnRlbmdhaGFuLCB0ZXJkYXBhdCBrb25zZXAgSG9ydHVzIENvbmNsdXN1cyAodGFtYW4gdGVydHV0dXApIGRpIGRhbGFtIHRlbWJvayBiaWFyYSBhdGF1IGthc3RlbC4gRnVuZ3NpIHV0YW1hIGRhcmkgbGFuc2thcCBpbmkgYmVyc2lmYXQgdXRpbGl0YXJpYW4sIHlhaXR1IHVudHVrLi4uIiwib3BzaSI6WyJNZW5nZ2VsYXIgcGVzdGEgcGVyYWh1IGJhZ2kga2F1bSBiYW5nc2F3YW4iLCJNZW5hbXBpbGthbiBpbHVzaSBvcHRpayBydWFuZyB0YW5wYSBiYXRhcyIsIk1lbmFuYW0gdGFuYW1hbiBvYmF0LCBzYXl1cmFuLCBkYW4gYnVhaCB1bnR1ayBiZXJ0YWhhbiBoaWR1cCIsIlRlbXBhdCByZWtyZWFzaSBiZXJidXJ1IGJhZ2kga2Fpc2FyIiwiTWVtYnVhdCBhcmVhIHBlcnR1bmp1a2FuIHRlYXRlciB0ZXJidWthIl0sImt1bmNpIjoiTWVuYW5hbSB0YW5hbWFuIG9iYXQsIHNheXVyYW4sIGRhbiBidWFoIHVudHVrIGJlcnRhaGFuIGhpZHVwIiwia3VuY2lfaHVydWYiOiJDIn0seyJwZXJ0YW55YWFuIjoiVGFtYW4gVmlsbGEgZCdFc3RlIHBhZGEgZXJhIFJlbmFpc2FucyBJdGFsaWEgdGVya2VuYWwgZGVuZ2FuIGtlamVuaXVzYW4gcmVrYXlhc2EgaGlkcm9sb2dpbnlhLiBBaXIgbWFuY3VyIGRhbiBqZXJhbSBidWF0YW4gZGkgdGFtYW4gdGVyc2VidXQgZGFwYXQgYmVyZnVuZ3NpIHRhbnBhIHBvbXBhIGxpc3RyaWsga2FyZW5hIG1lbWFuZmFhdGthbi4uLiIsIm9wc2kiOlsiVGVrYW5hbiB1ZGFyYSBkYW4gdGl1cGFuIGFuZ2luIiwiUGFzYW5nIHN1cnV0IGFpciBsYXV0IGRpIHNla2l0YXIgdmlsYSIsIlBlcmhpdHVuZ2FuIGVsZXZhc2kgdGFuYWggZGFuIHRla2FuYW4gYWlyIGJlcmJhc2lzIGdyYXZpdGFzaSIsIlNpc3RlbSBtZWthbmlzIGtpbmNpciBhbmdpbiBCZWxhbmRhIiwiQWxpcmFuIGFpciBiYXdhaCB0YW5haCBidWF0YW4gbWFudXNpYSJdLCJrdW5jaSI6IlBlcmhpdHVuZ2FuIGVsZXZhc2kgdGFuYWggZGFuIHRla2FuYW4gYWlyIGJlcmJhc2lzIGdyYXZpdGFzaSIsImt1bmNpX2h1cnVmIjoiQyJ9LHsicGVydGFueWFhbiI6IlB1bmNhayBkb21pbmFzaSBtYW51c2lhIGF0YXMgYWxhbSBkaSBFcm9wYSB0ZXJsaWhhdCBwYWRhIGdheWEgSmFyZGluIMOgIGxhIEZyYW7Dp2Fpc2UgZGkgSXN0YW5hIFZlcnNhaWxsZXMga2FyeWEgQW5kcsOpIExlIE7DtHRyZS4gQ2lyaSBraGFzIHV0YW1hIGRhcmkgZGVzYWluIGluaSBhZGFsYWguLi4iLCJvcHNpIjpbIlBlbmdndW5hYW4gYmF0dSBrYXB1ciBiZXJsdWJhbmcgc2VjYXJhIGFzaW1ldHJpcyIsIlBvbGEgc3VsdXIgZ2VvbWV0cmlzIChwYXJ0ZXIpLCBrYW5hbCBzaW1ldHJpcywgZGFuIHBvcm9zIHV0YW1hIChha3NpcykgcmFrc2FzYSIsIlBhZ2FyIHRhbmFtYW4geWFuZyBkaWJpYXJrYW4gdHVtYnVoIGxpYXIgZGFuIGFjYWsiLCJQZW5nZ3VuYWFuIHBhc2lyIHB1dGloIHlhbmcgZGlzYXB1IG1lbWJlbnR1ayBwb2xhIG9tYmFrIiwiUGVuZW1wYXRhbiBiYW5ndW5hbiB5YW5nIG1lbmdpa3V0aSBsZWt1a2FuIGtvbnR1ciBidWtpdCBhbGFtaSJdLCJrdW5jaSI6IlBvbGEgc3VsdXIgZ2VvbWV0cmlzIChwYXJ0ZXIpLCBrYW5hbCBzaW1ldHJpcywgZGFuIHBvcm9zIHV0YW1hIChha3NpcykgcmFrc2FzYSIsImt1bmNpX2h1cnVmIjoiQiJ9LHsicGVydGFueWFhbiI6IlBhZGEgZXJhIFJvbWFudGlrIEluZ2dyaXMsIGRpdGVtdWthbiBpbm92YXNpIHN0cnVrdHVyYWwgYmVybmFtYSBIYS1oYSBXYWxsLiBGdW5nc2kgdXRhbWEgZGFyaSBkaW5kaW5nIHRlcnNlbWJ1bnlpIGRpIGRhbGFtIHBhcml0IGluaSBhZGFsYWguLi4iLCJvcHNpIjpbIk1lbmFoYW4gdGFuYWggZGFyaSBsb25nc29yIGFraWJhdCBrZW1pcmluZ2FuIHlhbmcgZWtzdHJlbSIsIk1lbmdoYXNpbGthbiBnZW1hIHN1YXJhIHlhbmcgZXN0ZXRpayBkaSBkYWxhbSB0YW1hbiIsIk1lbmdhbGlya2FuIGFpciBodWphbiBtZW51anUga2UgZGFuYXUgYnVhdGFuIiwiTWVuY2VnYWggaGV3YW4gdGVybmFrIG1hc3VrIGtlIHRhbWFuIHRhbnBhIG1lcnVzYWsgcGVtYW5kYW5nYW4gZGVuZ2FuIHBhZ2FyIGZpc2lrIiwiTWVuamFkaSBqYWx1ciBldmFrdWFzaSByYWhhc2lhIGJhZ2kgcGVtaWxpayBydW1haCJdLCJrdW5jaSI6Ik1lbmNlZ2FoIGhld2FuIHRlcm5hayBtYXN1ayBrZSB0YW1hbiB0YW5wYSBtZXJ1c2FrIHBlbWFuZGFuZ2FuIGRlbmdhbiBwYWdhciBmaXNpayIsImt1bmNpX2h1cnVmIjoiRCJ9LHsicGVydGFueWFhbiI6IkxhbnNrYXAgQ2luYSBzYW5nYXQgZGlwZW5nYXJ1aGkgb2xlaCBmaWxvc29maSBUYW9pc21lLiBQZW5lcmFwYW4ga29uc2VwIGluaSBkaXd1anVka2FuIG1lbGFsdWkga2VzZWltYmFuZ2FuIHVuc3VyIGJlcmxhd2FuYW4gKFlpbiBkYW4gWWFuZyksIHlhbmcgc2VjYXJhIGZpc2lrIGRpc2ltYm9sa2FuIG9sZWggZWxlbWVuLi4uIiwib3BzaSI6WyJKZW1iYXRhbiBkYW4gcGF2aWxpdW4iLCJQYXNpciBwdXRpaCBkYW4gbGVudGVyYSBiYXR1IiwiQWlyIChsZW1idXQvaG9yaXpvbnRhbCkgZGFuIGJhdHUvZ3VudW5nIChrZXJhcy92ZXJ0aWthbCkiLCJQaW50dSBidWxhdCAobW9vbiBnYXRlKSBkYW4gamVuZGVsYSBrZXJhd2FuZyIsIlBvaG9uIGJlc2FyIGRhbiBydW1wdXQgYnVhdGFuIl0sImt1bmNpIjoiQWlyIChsZW1idXQvaG9yaXpvbnRhbCkgZGFuIGJhdHUvZ3VudW5nIChrZXJhcy92ZXJ0aWthbCkiLCJrdW5jaV9odXJ1ZiI6IkMifSx7InBlcnRhbnlhYW4iOiJGb3JtYXNpIGxhbnNrYXAgcGFkYSBUYW1hbiBLZWthaXNhcmFuIENpbmEgKEltcGVyaWFsIEdhcmRlbnMpIGhhbXBpciBzZWxhbHUgbWVuYW1waWxrYW4ga29uZmlndXJhc2kgc2F0dSBkYW5hdSBiZXNhciBkZW5nYW4gdGlnYSBwdWxhdSBkaSB0ZW5nYWhueWEuIEhhbCBpbmkgbWVyZXByZXNlbnRhc2lrYW4gbWl0b2xvZ2kuLi4iLCJvcHNpIjpbIktvbnNlcCBmYW5hIGRhbGFtIHBlcmphbGFuYW4gc3Bpcml0dWFsIiwiR3VudW5nIFBlbmdsYWksIHRlbXBhdCB0aW5nZ2FsIHBhcmEgZGV3YSBkYWxhbSBtaXRvbG9naSBEYW9pc21lIiwiSHVidW5nYW4gaGllcmFya2kgc29zaWFsIGRhbGFtIGFqYXJhbiBLb25mdXNpYW5pc21lIiwiUG9yb3Mga29zbWlzIHlhbmcgbWVtaXNhaGthbiBkdW5pYSBhdGFzIGRhbiBkdW5pYSBiYXdhaCIsIlNpc3RlbSBwZXJ0YWhhbmFuIGJlbnRlbmcgYmVybGFwaXMiXSwia3VuY2kiOiJHdW51bmcgUGVuZ2xhaSwgdGVtcGF0IHRpbmdnYWwgcGFyYSBkZXdhIGRhbGFtIG1pdG9sb2dpIERhb2lzbWUiLCJrdW5jaV9odXJ1ZiI6IkIifSx7InBlcnRhbnlhYW4iOiJFbGVtZW4gZm9rYWwgKGZvY2FsIHBvaW50KSB5YW5nIHNhbmdhdCBkaWhhcmdhaSBwYWRhIFRhbWFuIFByaWJhZGkgS2F1bSBUZXJwZWxhamFyIChTY2hvbGFyIEdhcmRlbnMpIGRpIFN1emhvdSBhZGFsYWggQmF0dSBUYWlodS4gS2FyYWt0ZXJpc3RpayB1dGFtYSBkYXJpIGJhdHUgaW5pIGFkYWxhaC4uLiIsIm9wc2kiOlsiQmVyYmVudHVrIGtvdGFrIHByZXNpc2kga2FyZW5hIGRpcG90b25nIGRlbmdhbiBtZXNpbiIsIkJlcndhcm5hIHB1dGloIGJlcnNpaCBkYW4gcGVybXVrYWFubnlhIGhhbHVzIG1lbmdraWxhcCIsIkJlcnVwYSBiYXR1IGthcHVyIHlhbmcgdGVya2lraXMgYWlyIHNlY2FyYSBhbGFtaSBzZWhpbmdnYSBiZXJsdWJhbmctbHViYW5nIHJ1bWl0IiwiTWVydXBha2FuIGJhdHUgdnVsa2FuaWsgaGl0YW0geWFuZyBkaWFtYmlsIGRhcmkga2F3YWggZ3VudW5nIiwiQmF0dSB5YW5nIHNlbmdhamEgZGljYXQgZGVuZ2FuIHdhcm5hLXdhcm5pIGNlcmFoIl0sImt1bmNpIjoiQmVydXBhIGJhdHUga2FwdXIgeWFuZyB0ZXJraWtpcyBhaXIgc2VjYXJhIGFsYW1pIHNlaGluZ2dhIGJlcmx1YmFuZy1sdWJhbmcgcnVtaXQiLCJrdW5jaV9odXJ1ZiI6IkMifSx7InBlcnRhbnlhYW4iOiJUZWtuaWsgdGF0YSBydWFuZyBKaWVqaW5nIChCb3Jyb3dlZCBTY2VuZXJ5KSBwYWRhIGxhbnNrYXAgQ2luYSBkaWxha3VrYW4gZGVuZ2FuIGNhcmEuLi4iLCJvcHNpIjpbIk1lbWluamFtIG1hdGVyaWFsIGJhdHUgZGFuIHRhbmFtYW4gZGFyaSBkYWVyYWggdGV0YW5nZ2EiLCJNZW55ZW1idW55aWthbiBzZWx1cnVoIHBlbWFuZGFuZ2FuIGx1YXIgYWdhciB0YW1hbiB0ZXJhc2EgdGVyaXNvbGFzaSIsIk1lbWJpbmdrYWkgcGVtYW5kYW5nYW4gZGkgbHVhciB0YXBhayAoc2VwZXJ0aSBwdW5jYWsgcGFnb2RhIGRpIGtlamF1aGFuKSBhZ2FyIHNlb2xhaCBtZW5qYWRpIGJhZ2lhbiBkYXJpIGtvbXBvc2lzaSB0YW1hbiIsIk1lbWJ1YXQgcmVwbGlrYSBsdWtpc2FuIDJEIG1lbmphZGkgYmVudHVrIHJlbGllZiBkaW5kaW5nIiwiTWVuZ2d1bmFrYW4gY2VybWluIHJha3Nhc2EgdW50dWsgbWVtYW50dWxrYW4gYmF5YW5nYW4gcG9ob24iXSwia3VuY2kiOiJNZW1iaW5na2FpIHBlbWFuZGFuZ2FuIGRpIGx1YXIgdGFwYWsgKHNlcGVydGkgcHVuY2FrIHBhZ29kYSBkaSBrZWphdWhhbikgYWdhciBzZW9sYWggbWVuamFkaSBiYWdpYW4gZGFyaSBrb21wb3Npc2kgdGFtYW4iLCJrdW5jaV9odXJ1ZiI6IkMifSx7InBlcnRhbnlhYW4iOiJNYXN5YXJha2F0IEplcGFuZyBtZW1pbGlraSBrZXBlcmNheWFhbiBhbmltaXNtZSBhc2xpIGJlcm5hbWEgU2hpbnRvLiBEYWxhbSBwYW5kYW5nYW4gU2hpbnRvLCBydWFuZyBzYWtyYWwgeWFuZyBtZW5qYWRpIHRlbXBhdCBiZXJzZW1heWFtIGRld2Evcm9oIHN1Y2kgKEthbWkpIGRpIGFsYW0gZGl0YW5kYWkgZGVuZ2FuLi4uIiwib3BzaSI6WyJNZW1idWF0IGtvbGFtIHNpbWV0cmlzIiwiTWVuZ2lrYXRrYW4gdGFsaSBzdWNpIChzaGltZW5hd2EpIHBhZGEgcG9ob24gYXRhdSBiYXR1IHVuaWsiLCJNZW5kaXJpa2FuIHBhdHVuZyBiYXR1IGJlcnNrYWxhIHJha3Nhc2EiLCJNZXJhdGFrYW4gcGVybXVrYWFuIHRhbmFoIHNlY2FyYSB0b3RhbCIsIk1lbmFuYW0gYnVuZ2EgYmVyd2FybmEtd2FybmkiXSwia3VuY2kiOiJNZW5naWthdGthbiB0YWxpIHN1Y2kgKHNoaW1lbmF3YSkgcGFkYSBwb2hvbiBhdGF1IGJhdHUgdW5payIsImt1bmNpX2h1cnVmIjoiQiJ9LHsicGVydGFueWFhbiI6IktvbnNlcCBLYXJlc2Fuc3VpIChaZW4gRHJ5IEdhcmRlbikgZGkgSmVwYW5nIG1lcnVwYWthbiBiZW50dWsgYWJzdHJha3NpIHNwYXNpYWwgeWFuZyBla3N0cmVtIGthcmVuYSB0aWRhayBtZW5nZ3VuYWthbiBhaXIgbnlhdGEuIEVsZW1lbiB5YW5nIGRpZ3VuYWthbiB1bnR1ayBtZWxhbWJhbmdrYW4gc2FtdWRyYSBsdWFzIGFkYWxhaC4uLiIsIm9wc2kiOlsiUnVtcHV0IGhpamF1IHlhbmcgZGlwb3RvbmcgcGVuZGVrIiwiUGFzaXIgcHV0aWggYXRhdSBrZXJpa2lsIHlhbmcgZGlzYXB1IChyYWtlZCkgbWVtYmVudHVrIHBvbGEgcmlhayBvbWJhayIsIlN1c3VuYW4gYmF0dSBoaXRhbSB2ZXJ0aWthbCB5YW5nIHRpbmdnaSIsIkJvbmdrYWhhbiBiYXR1IGthcHVyIGJlcmx1YmFuZyIsIkphbHVyIHNldGFwYWsgZGFyaSBrYXl1IHlhbmcgbWVudWEiXSwia3VuY2kiOiJQYXNpciBwdXRpaCBhdGF1IGtlcmlraWwgeWFuZyBkaXNhcHUgKHJha2VkKSBtZW1iZW50dWsgcG9sYSByaWFrIG9tYmFrIiwia3VuY2lfaHVydWYiOiJCIn0seyJwZXJ0YW55YWFuIjoiRXN0ZXRpa2EgV2FiaS1TYWJpIHlhbmcgZGl0ZXJhcGthbiBwYWRhIFRhbWFuIFRlaCAoUm9qaSkgZGkgSmVwYW5nIG1lbmdhamFya2FuIG1hbnVzaWEgdW50dWsgbWVuZ2hhcmdhaSBrZWluZGFoYW4gZGFsYW0uLi4iLCJvcHNpIjpbIktlbWV3YWhhbiwga2VtZWdhaGFuLCBkYW4gc2thbGEgcnVhbmcgeWFuZyByYWtzYXNhIiwiS2V0aWRha3NlbXB1cm5hYW4sIGtlcG9sb3NhbiwgZGFuIGtlZmFuYWFuIG1hdGVyaWFsIHlhbmcgbWVudWEgYWxhbWkiLCJQZXJoaXR1bmdhbiBtYXRlbWF0aWthIHlhbmcgcHJlc2lzaSBkYW4gc2ltZXRyaXMgc2VtcHVybmEiLCJQZW5nZ3VuYWFuIHdhcm5hLXdhcm5pIHRhbmFtYW4gaGlhcyB5YW5nIG1lbmNvbG9rIiwiS2VrdWF0YW4gdGVrbm9sb2dpIG1vZGVybiBkYWxhbSBtZW5ha2x1a2thbiBhbGFtIl0sImt1bmNpIjoiS2V0aWRha3NlbXB1cm5hYW4sIGtlcG9sb3NhbiwgZGFuIGtlZmFuYWFuIG1hdGVyaWFsIHlhbmcgbWVudWEgYWxhbWkiLCJrdW5jaV9odXJ1ZiI6IkIifSx7InBlcnRhbnlhYW4iOiJEYWxhbSBwZW1vZGVsYW4gcnVhbmcgbGFuc2thcCBKZXBhbmcsIHRlcmRhcGF0IGlzdGlsYWggTWEgeWFuZyBtZW1pbGlraSBhcnRpLi4uIiwib3BzaSI6WyJUZWtuaWsgbWVueWVtYnVueWlrYW4gc2ViYWdpYW4gcGVtYW5kYW5nYW4gdW50dWsgbWVtYW5jaW5nIHJhc2EgcGVuYXNhcmFuIiwiTWVtaW5qYW0gcGVtYW5kYW5nYW4gZ3VudW5nIGRpIGtlamF1aGFuIiwiUnVhbmcgbmVnYXRpZiBhdGF1IGFyZWEga29zb25nIHlhbmcgbWVtYmVyaWthbiBqZWRhIHZpc3VhbCBhZ2FyIHBpa2lyYW4gYmlzYSBiZXJuYXBhcyIsIkJhc2tvbSBiYXR1IHlhbmcgZGlndW5ha2FuIHVudHVrIG1lbmN1Y2kgdGFuZ2FuIHNlYmVsdW0gdXBhY2FyYSB0ZWgiLCJSdXRlIGphbGFuIHNldGFwYWsgeWFuZyBkaWJ1YXQgYmVycHV0YXItcHV0YXIiXSwia3VuY2kiOiJSdWFuZyBuZWdhdGlmIGF0YXUgYXJlYSBrb3NvbmcgeWFuZyBtZW1iZXJpa2FuIGplZGEgdmlzdWFsIGFnYXIgcGlraXJhbiBiaXNhIGJlcm5hcGFzIiwia3VuY2lfaHVydWYiOiJDIn1d";
     let daftarSoal = JSON.parse(decodeURIComponent(escape(atob(base64Data))));
     const endpointUrl = "https://script.google.com/macros/s/AKfycbx2F-4fnaJkUSzJFV48kcCLE1a4l_xlLhNUpWbzWpfL2NzUEwZ0J2ZteDxWJgmi7Kcvxw/exec";
+    
+    let soalAktifIndex = 0;
+    let jawabanSiswa = {}; // Simpan jawaban misal: { 0: "Jakarta", 1: "Bandung" }
 
     function acakArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -54,47 +96,127 @@
         }
         return array;
     }
-    function persiapkanDanAcakSoal() {
+
+    // Persiapan sebelum tes
+    window.onload = function() {
         acakArray(daftarSoal);
         daftarSoal.forEach(soal => acakArray(soal.opsi));
-        tampilkanSoalKeSiswa();
+    };
+
+    function mulaiUjian() {
+        const nama = document.getElementById('nama_siswa').value.trim();
+        const kelas = document.getElementById('kelas_siswa').value.trim();
+        
+        if (!nama || !kelas) {
+            alert("⚠️ Nama Lengkap dan Kelas wajib diisi terlebih dahulu!");
+            return;
+        }
+
+        // Transisi Halaman
+        document.getElementById('halaman-utama').style.display = 'none';
+        document.getElementById('halaman-ujian').style.display = 'block';
+        
+        tampilkanSoal(0);
     }
-    function tampilkanSoalKeSiswa() {
-        const tempatSoal = document.getElementById('lembar-soal-place'); tempatSoal.innerHTML = "";
-        daftarSoal.forEach((soal, idx) => {
-            let naskahHtml = '<div class="card-soal"><div class="teks-soal">' + (idx + 1) + '. ' + soal.pertanyaan + '</div>';
-            const abjad = ['A', 'B', 'C', 'D', 'E'];
-            soal.opsi.forEach((opsiPil, oIdx) => {
-                let idLabel = "label-" + idx + "-" + oIdx;
-                naskahHtml += '<label class="opsi-item" id="' + idLabel + '"><input type="radio" name="soal-' + idx + '" value="' + opsiPil.replace(/"/g, '&quot;') + '" onchange="tandaiPilihan(' + idx + ',' + oIdx + ')" required> <strong>' + abjad[oIdx] + '.</strong> ' + opsiPil + '</label>';
-            });
-            tempatSoal.innerHTML += naskahHtml + '</div>';
+
+    function renderGrid() {
+        const grid = document.getElementById('tempat-grid-soal');
+        grid.innerHTML = "";
+        
+        daftarSoal.forEach((_, idx) => {
+            let terjawabClass = jawabanSiswa[idx] ? 'terjawab' : '';
+            let aktifClass = (idx === soalAktifIndex) ? 'aktif' : '';
+            
+            grid.innerHTML += `<div class="kotak-soal ${terjawabClass} ${aktifClass}" onclick="tampilkanSoal(${idx})">${idx + 1}</div>`;
         });
     }
-    function tandaiPilihan(soalIdx, opsiIdx) {
-        const semuaOpsiDiSoal = document.getElementsByName("soal-" + soalIdx);
-        semuaOpsiDiSoal.forEach((item, oIdx) => { document.getElementById("label-" + soalIdx + "-" + oIdx).classList.remove("terpilih"); });
-        document.getElementById("label-" + soalIdx + "-" + opsiIdx).classList.add("terpilih");
+
+    function tampilkanSoal(idx) {
+        soalAktifIndex = idx;
+        const soal = daftarSoal[idx];
+        const tempatSoal = document.getElementById('lembar-soal-place');
+        
+        let naskahHtml = '<div class="card-soal"><div class="teks-soal">Soal No. ' + (idx + 1) + '<br><br>' + soal.pertanyaan + '</div>';
+        const abjad = ['A', 'B', 'C', 'D', 'E'];
+        
+        soal.opsi.forEach((opsiPil, oIdx) => {
+            let nilaiOpsi = opsiPil.replace(/"/g, '&quot;');
+            let isChecked = jawabanSiswa[idx] === nilaiOpsi ? 'checked' : '';
+            let terpilihClass = isChecked ? 'terpilih' : '';
+            let idLabel = "label-" + idx + "-" + oIdx;
+            
+            naskahHtml += `<label class="opsi-item ${terpilihClass}" id="${idLabel}">
+                <input type="radio" name="soal-${idx}" value="${nilaiOpsi}" onchange="tandaiPilihan(${idx}, '${nilaiOpsi}')" ${isChecked}> 
+                <strong>${abjad[oIdx]}.</strong> ${opsiPil}
+            </label>`;
+        });
+        naskahHtml += '</div>';
+        
+        tempatSoal.innerHTML = naskahHtml;
+        
+        // Pengaturan Tombol Navigasi
+        document.getElementById('btn-prev').style.visibility = (idx === 0) ? 'hidden' : 'visible';
+        
+        if (idx === daftarSoal.length - 1) {
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('btn-kirim').style.display = 'block';
+        } else {
+            document.getElementById('btn-next').style.display = 'block';
+            document.getElementById('btn-kirim').style.display = 'none';
+        }
+        
+        renderGrid();
     }
+
+    function tandaiPilihan(soalIdx, nilaiDipilih) {
+        jawabanSiswa[soalIdx] = nilaiDipilih;
+        tampilkanSoal(soalIdx); // render ulang agar highlight & grid update
+    }
+
+    function navigasi(step) {
+        let nextIdx = soalAktifIndex + step;
+        if (nextIdx >= 0 && nextIdx < daftarSoal.length) {
+            tampilkanSoal(nextIdx);
+        }
+    }
+
     function submitJawabanSiswa() {
         const nama = document.getElementById('nama_siswa').value.trim();
         const kelas = document.getElementById('kelas_siswa').value.trim();
-        if (!nama || !kelas) { alert("⚠️ Nama Lengkap dan Kelas wajib diisi!"); return; }
-        let jumlahBenar = 0; let sudahIsiSemua = true;
+        
+        let jumlahBenar = 0; 
+        let soalBelumTerjawab = [];
+        
         daftarSoal.forEach((soal, idx) => {
-            const radioTerpilih = document.querySelector('input[name="soal-' + idx + '"]:checked');
-            if (!radioTerpilih) { sudahIsiSemua = false; } else if (radioTerpilih.value === soal.kunci) { jumlahBenar++; }
+            if (!jawabanSiswa[idx]) {
+                soalBelumTerjawab.push(idx + 1);
+            } else if (jawabanSiswa[idx] === soal.kunci) {
+                jumlahBenar++;
+            }
         });
-        if (!sudahIsiSemua) { alert("⚠️ Harap jawab semua pertanyaan!"); return; }
+
+        if (soalBelumTerjawab.length > 0) {
+            let konfirmasi = confirm(`⚠️ Perhatian! Anda belum menjawab soal nomor: ${soalBelumTerjawab.join(", ")}.\n\nApakah Anda yakin ingin mengirim dan mengakhiri ujian?`);
+            if (!konfirmasi) return;
+        }
+
         const nilaiFinal = Math.round((jumlahBenar / daftarSoal.length) * 100);
-        const paketData = new FormData(); paketData.append("nama", nama); paketData.append("kelas", kelas); paketData.append("nilai", nilaiFinal);
-        alert("Menghubungkan ke server database guru...");
+        const paketData = new FormData(); 
+        paketData.append("nama", nama); 
+        paketData.append("kelas", kelas); 
+        paketData.append("nilai", nilaiFinal);
+
+        document.getElementById('btn-kirim').innerText = "Sedang Mengirim...";
+        document.getElementById('btn-kirim').disabled = true;
+
         fetch(endpointUrl, { method: "POST", body: paketData, mode: "no-cors" }).then(() => {
-            alert("🎉 Sukses! Jawaban terkirim.");
-            document.querySelector('.wrapper').innerHTML = '<div style="text-align:center; padding:40px 20px;"><h2>✅ Ujian Selesai!</h2><p>Terima kasih <strong>' + nama + ' (' + kelas + ')</strong>, lembar jawaban Anda telah sukses terekam.</p></div>';
-        }).catch(() => alert("❌ Gagal mengirim jawaban."));
+            document.querySelector('.wrapper').innerHTML = '<div style="text-align:center; padding:40px 20px;"><h2>✅ Ujian Selesai!</h2><p>Terima kasih <strong>' + nama + ' (' + kelas + ')</strong>, lembar jawaban Anda telah sukses terekam oleh sistem.</p></div>';
+        }).catch(() => {
+            alert("❌ Gagal mengirim jawaban. Periksa koneksi internet Anda.");
+            document.getElementById('btn-kirim').innerText = "Kirim Lembar Jawaban";
+            document.getElementById('btn-kirim').disabled = false;
+        });
     }
-    window.onload = persiapkanDanAcakSoal;
 </script>
 
 
